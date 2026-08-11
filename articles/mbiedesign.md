@@ -1,0 +1,131 @@
+# Getting started with mbiedesign
+
+`mbiedesign` helps you design and size cancer screening trials that use
+**late-stage cancer incidence** as the endpoint. You calibrate a
+natural-history model, then use one function —
+[`get_summary_outcomes_by_design()`](https://kemalgog.github.io/mbiedesign/reference/get_summary_outcomes_by_design.md)
+— to project the trial outcomes and required per-arm sample size for the
+traditional and intended-effect (IE) designs.
+
+``` r
+
+library(mbiedesign)
+```
+
+## 1. Choose a calibrated model
+
+A calibrated model is defined by two mean sojourn times you choose — the
+**overall mean sojourn time (OMST)** and the **late-stage mean sojourn
+time (LMST)**; the **early-stage mean sojourn time (EMST)** is derived
+by the fit. A lung cancer model, calibrated to SEER age- and
+stage-specific incidence, is available at the base case and across the
+sensitivity analyses, so you can select one directly:
+
+``` r
+
+model <- load_fitted_model("lung", OMST = 4.0, LMST = 1.35)
+#> Warning: namespace 'mbtrialdesign' is not available and has been replaced
+#> by .GlobalEnv when processing object 'base_fit'
+
+model$summary_out$OMST   # overall mean sojourn time     (chosen)  = 4.00 years
+#> [1] 4
+model$summary_out$LMST   # late-stage mean sojourn time  (chosen)  = 1.35 years
+#> [1] 1.35
+model$summary_out$EMST   # early-stage mean sojourn time (derived) = 3.01 years
+#> [1] 3.00525
+```
+
+For sojourn times that are not precalibrated — or a different cancer
+site — calibrate a new model with
+[`fit_natural_history()`](https://kemalgog.github.io/mbiedesign/reference/fit_natural_history.md)
+(see
+[`vignette("calibration")`](https://kemalgog.github.io/mbiedesign/articles/calibration.md)):
+
+``` r
+
+model <- fit_natural_history(OMST = 3.5, LMST = 1.2)
+```
+
+## 2. Summary outcomes and sample size by design
+
+[`get_summary_outcomes_by_design()`](https://kemalgog.github.io/mbiedesign/reference/get_summary_outcomes_by_design.md)
+is the main function. For a given screening schedule and test, it
+returns one row per design — traditional and IE — with the late-stage
+event rates, the required per-arm sample size, and the **relative
+efficiency** (N required by the traditional design divided by N required
+by that design):
+
+``` r
+
+summary_data <- get_summary_outcomes_by_design(
+  rate_matrix = model$rate.matrix,
+  start_age = 62, numscreens = 3, screen_int = 1, num_followup_intervals = 4.5,
+  sens_e = 0.35, sens_l = 0.82, specificity = 0.855,   # test performance
+  allocation_ratio = 1,                                 # balanced arms
+  power = 0.90, alpha = 0.025                           # target power (= 1 - beta), one-sided level
+)
+
+summary_data[c("design", "fraction", "n_per_arm", "relative_efficiency")]
+#>        design  fraction n_per_arm relative_efficiency
+#> 1 traditional        NA  17295.56            1.000000
+#> 2          IE 0.3803904  10796.30            1.601989
+```
+
+A relative efficiency above 1 means that design reaches the same power
+with fewer participants than the traditional design. Pass
+`design = "IE"` to return a single design. Each row also carries the
+control- and screen-arm event rates (`p_c`, `p_s`), the risk ratio and
+difference (`rr`, `rd`), and the subgroup fraction the design conditions
+on (`fraction` — the ever-positive fraction for IE).
+
+## 3. The full projection (optional)
+
+For the early-, late-, and overall-stage outcomes over the course of the
+trial, use
+[`get_trial_results_by_design()`](https://kemalgog.github.io/mbiedesign/reference/get_trial_results_by_design.md),
+then
+[`stage_shift_by_design()`](https://kemalgog.github.io/mbiedesign/reference/stage_shift_by_design.md)
+to extract a table for one design:
+
+``` r
+
+trial_results <- get_trial_results_by_design(
+  rate_matrix = model$rate.matrix,
+  start_age = 62, numscreens = 3, screen_int = 1, num_followup_intervals = 4.5,
+  sens_e = 0.35, sens_l = 0.82, specificity = 0.855,
+  n_control = 26722, n_screen = 26722
+)
+
+head(stage_shift_by_design(trial_results, design = "standard",
+                           yearly_or_cumulative = "cumulative"))
+#>   time_since_randomization age1 age2     period control_arm_detected_late
+#> 1                        1   62   63     screen               0.001833961
+#> 2                        2   63   64     screen               0.003829505
+#> 3                        3   64   65 postscreen               0.005994831
+#> 4                        4   65   66 postscreen               0.008338100
+#> 5                        5   66   67 postscreen               0.010867407
+#> 6                        6   67   68 postscreen               0.013590762
+#>   screen_detected_late interval_detected_late screen_arm_detected_late
+#> 1          0.001946178           0.0006359804              0.002582159
+#> 2          0.002969721           0.0011157814              0.004085503
+#> 3          0.003828636           0.0015655577              0.005394194
+#> 4          0.003828636           0.0025957061              0.006424342
+#> 5          0.003828636           0.0041340214              0.007962658
+#> 6          0.003828636           0.0061105291              0.009939165
+#>   stage_shift
+#> 1         -41
+#> 2          -7
+#> 3          10
+#> 4          23
+#> 5          27
+#> 6          27
+```
+
+## Where to go next
+
+- [`vignette("calibration")`](https://kemalgog.github.io/mbiedesign/articles/calibration.md)
+  — how the natural-history model is fit to incidence data, and how to
+  calibrate to your own.
+- [`vignette("manuscript-analysis")`](https://kemalgog.github.io/mbiedesign/articles/manuscript-analysis.md)
+  — the full late-stage lung cancer results, comparing the traditional
+  and intended-effect designs, with sensitivity analyses.

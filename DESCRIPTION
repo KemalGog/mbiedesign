@@ -1,0 +1,40 @@
+Package: mbiedesign
+Title: Model-based cancer screening trial design
+Version: 0.0.0.9000
+Authors@R:
+    person("Kemal Caglar", "Gogebakan", , "kmlcglr@gmail.com", role = c("aut", "cre"))
+Description: Model-based design of cancer screening trials that use late-stage
+    cancer incidence as the endpoint. A calibrated multistate natural-history
+    model, fit by maximum likelihood to population incidence data, is used to
+    project stage-specific trial outcomes under the traditional and
+    intended-effect (IE) designs, and to compute the per-arm sample size and
+    relative efficiency of each design.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Depends:
+    R (>= 3.5.0)
+Imports:
+    dplyr,
+    msm,
+    stats
+Suggests:
+    cowplot,
+    ggplot2,
+    kableExtra,
+    knitr,
+    openxlsx,
+    purrr,
+    readr,
+    reshape2,
+    rmarkdown,
+    scales,
+    stringr,
+    testthat (>= 3.0.0),
+    tibble,
+    tidyr
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+URL: https://github.com/KemalGog/mbiedesign
+BugReports: https://github.com/KemalGog/mbiedesign/issues

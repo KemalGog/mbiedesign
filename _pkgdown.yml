@@ -1,0 +1,38 @@
+url: https://kemalgog.github.io/mbiedesign/
+
+template:
+  bootstrap: 5
+
+articles:
+- title: Get started
+  navbar: ~
+  contents:
+  - mbiedesign
+- title: Guides
+  contents:
+  - calibration
+  - manuscript-analysis
+
+reference:
+- title: Main function
+  desc: Summary outcomes and per-arm sample size by trial design.
+  contents:
+  - get_summary_outcomes_by_design
+- title: Calibration
+  desc: Fit the multi-state natural-history model to incidence data, or load a calibrated model.
+  contents:
+  - fit_natural_history
+  - load_fitted_model
+- title: Projection
+  desc: Project control- and screen-arm outcomes by trial design.
+  contents:
+  - get_trial_results_by_design
+  - stage_shift_by_design
+  - get_positivity_rate
+- title: Sample size and efficiency
+  desc: Size or power a single design, or compute relative efficiency.
+  contents:
+  - n_required_by_design
+  - power_by_design
+  - get_achieved_power
+  - relative_efficiency

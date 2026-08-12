@@ -31,7 +31,8 @@ below.
 ## Start here
 
 After installing, the vignettes walk through everything from a quick
-trial sizing to reproducing the results in the manuscript:
+application of the model in single trial setting to reproducing the
+results in the manuscript:
 
 ``` r
 

@@ -74,4 +74,4 @@ N_design). See `vignette("mbiedesign")` for a full walk-through.
 
 ## Reference
 
-> Lange JM, Gogebakan KC, Katki H, Etzioni R. Power evaluation of cancer screening trial designs with incidence-based endpoints using a multi-state disease model 
+> Lange JM, Gogebakan KC, Katki H, Etzioni R. PDrivers of efficiency in cancer screening trial designs with incidence-based endpoints
